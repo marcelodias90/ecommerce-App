@@ -5,7 +5,9 @@ import { Repository } from "typeorm";
 import { CreateUsuarioDto } from "./CreateUsuarioDto";
 import { ResponseUsuarioDto } from "./ResponseUsuarioDto";
 import { EmailExistenteError } from "src/erros/EmailExistenteError";
-
+import { EmailInexistenteError } from "src/erros/EmailInexistenteError";
+import  auth from "../token/auth"
+import { sign } from "jsonwebtoken"
 
 @Injectable()
 export class UsuarioService {
@@ -38,7 +40,23 @@ export class UsuarioService {
         return responseUsuarioDto
     }
 
-    deletar(id: number): void {
-        return
-    }
+    async validarEmail(email: string): Promise<any> {
+        const chekcEmail = await this.usuarioRepository.findOne({
+            where: {
+                email
+            }
+        })
+        if(!chekcEmail) {
+            throw new EmailInexistenteError(email)
+        }
+        const token = sign({}, auth.jwt.secret, {
+            expiresIn: auth.jwt.expiresIn
+          });
+
+        return {
+            email,
+            token
+        }
+    }   
+
 }
