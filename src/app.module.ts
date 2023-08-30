@@ -1,0 +1,34 @@
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { UsuarioController } from './usuario/usuario.controller';
+import { UsuarioService } from './usuario/usuario.service';
+import { Usuario } from './usuario/usuario.entity';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule} from '@nestjs/typeorm'
+import { UsuarioModule } from './usuario/usuario.modules';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env']
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mssql',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT) || 1433,
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [`${__dirname}/**/*.entity{.ts,*.js}`],
+      migrations: [`${__dirname}/migration/{.ts,*.js}`],
+      migrationsRun: true,
+      extra: {
+        trustServerCertificate: true,
+      }
+    }),
+    UsuarioModule
+  ],
+
+})
+export class AppModule { }
