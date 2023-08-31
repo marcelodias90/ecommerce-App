@@ -21,7 +21,7 @@ export class UsuarioController {
 
     @Get()
     async lista(): Promise<any> {
-        const usuarios = await this.usuarioService.Listar()
+        const usuarios = await this.usuarioService.listar()
         return usuarios
     }
 }

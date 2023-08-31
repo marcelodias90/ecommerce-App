@@ -7,6 +7,7 @@ import { ResponseUsuarioDto } from "./ResponseUsuarioDto";
 import { EmailExistenteError } from "src/erros/EmailExistenteError";
 import { EmailInexistenteError } from "src/erros/EmailInexistenteError";
 import { TokenService } from "src/token/token.service";
+import { MailService } from "src/nodemailer/mail";
 
 
 @Injectable()
@@ -14,10 +15,11 @@ export class UsuarioService {
     constructor(
         @InjectRepository(Usuario)
         private usuarioRepository: Repository<Usuario>,
-        private readonly tokenService: TokenService
+        private readonly tokenService: TokenService,
+        private readonly mailService: MailService
     ) { }
 
-    async Listar(): Promise<Usuario[]> {
+    async listar(): Promise<Usuario[]> {
         return await this.usuarioRepository.find()
     }
 
@@ -53,8 +55,8 @@ export class UsuarioService {
             const token = await this.tokenService.gerarToken(usuarioExiste.id);
             usuarioExiste.status=ativado
             await this.usuarioRepository.save(usuarioExiste);
+             this.mailService.sendMail()
             return token
         }
     }
-
 }
