@@ -1,11 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsuarioController } from './usuario/usuario.controller';
-import { UsuarioService } from './usuario/usuario.service';
-import { Usuario } from './usuario/usuario.entity';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule} from '@nestjs/typeorm'
+import { TypeOrmModule } from '@nestjs/typeorm'
 import { UsuarioModule } from './usuario/usuario.modules';
 
 @Module({
@@ -27,7 +22,7 @@ import { UsuarioModule } from './usuario/usuario.modules';
         trustServerCertificate: true,
       }
     }),
-    UsuarioModule
+    UsuarioModule,
   ],
 
 })
