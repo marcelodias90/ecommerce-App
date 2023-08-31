@@ -6,14 +6,15 @@ import { CreateUsuarioDto } from "./CreateUsuarioDto";
 import { ResponseUsuarioDto } from "./ResponseUsuarioDto";
 import { EmailExistenteError } from "src/erros/EmailExistenteError";
 import { EmailInexistenteError } from "src/erros/EmailInexistenteError";
-import  auth from "../token/auth"
-import { sign } from "jsonwebtoken"
+import { TokenService } from "src/token/token.service";
+
 
 @Injectable()
 export class UsuarioService {
     constructor(
         @InjectRepository(Usuario)
-        private usuarioRepository: Repository<Usuario>
+        private usuarioRepository: Repository<Usuario>,
+        private readonly tokenService: TokenService
     ) { }
 
     async Listar(): Promise<Usuario[]> {
@@ -29,6 +30,7 @@ export class UsuarioService {
             throw new EmailExistenteError(existeEmail.email)
         }
         const usuario = this.usuarioRepository.create(usuarioDto);
+        usuario.status = 0
         const novoUsuario = await this.usuarioRepository.save(usuario);
         const responseUsuarioDto: ResponseUsuarioDto = {
             id: novoUsuario.id,
@@ -41,22 +43,18 @@ export class UsuarioService {
     }
 
     async validarEmail(email: string): Promise<any> {
-        const chekcEmail = await this.usuarioRepository.findOne({
+        const ativado = 1
+        const usuarioExiste = await this.usuarioRepository.findOne({
             where: {
                 email
             }
         })
-        if(!chekcEmail) {
-            throw new EmailInexistenteError(email)
+        if (usuarioExiste) {
+            const token = await this.tokenService.gerarToken(usuarioExiste.id);
+            usuarioExiste.status=ativado
+            await this.usuarioRepository.save(usuarioExiste);
+            return token
         }
-        const token = sign({}, auth.jwt.secret, {
-            expiresIn: auth.jwt.expiresIn
-          });
-
-        return {
-            email,
-            token
-        }
-    }   
+    }
 
 }
