@@ -10,6 +10,11 @@ import { TokenService } from "src/token/token.service";
 import { MailService } from "src/nodemailer/mail";
 
 
+enum status {
+    ATIVO = 1,
+    DESATIVADO = 0
+}
+
 @Injectable()
 export class UsuarioService {
     constructor(
@@ -18,6 +23,7 @@ export class UsuarioService {
         private readonly tokenService: TokenService,
         private readonly mailService: MailService
     ) { }
+
 
     async listar(): Promise<Usuario[]> {
         return await this.usuarioRepository.find()
@@ -32,30 +38,31 @@ export class UsuarioService {
             throw new EmailExistenteError(existeEmail.email)
         }
         const usuario = this.usuarioRepository.create(usuarioDto);
-        usuario.status = 0
+        usuario.status = status.DESATIVADO
         const novoUsuario = await this.usuarioRepository.save(usuario);
         const responseUsuarioDto: ResponseUsuarioDto = {
             id: novoUsuario.id,
             nome: novoUsuario.nome,
             sobrenome: novoUsuario.sobrenome,
             email: novoUsuario.email,
-            cpf: novoUsuario.cpf
+            cpf: novoUsuario.cpf,
+            status: novoUsuario.status
         }
         return responseUsuarioDto
     }
 
     async validarEmail(email: string): Promise<any> {
         const ativado = 1
-        const usuarioExiste = await this.usuarioRepository.findOne({
+        const usuarioExiste: ResponseUsuarioDto = await this.usuarioRepository.findOne({
             where: {
                 email
             }
         })
         if (usuarioExiste) {
             const token = await this.tokenService.gerarToken(usuarioExiste.id);
-            usuarioExiste.status=ativado
+            usuarioExiste.status = status.ATIVO
             await this.usuarioRepository.save(usuarioExiste);
-            await this.mailService.enviarMail(usuarioExiste.email, token.token)
+            await this.mailService.enviarMail(usuarioExiste, token)
             return token
         }
     }
