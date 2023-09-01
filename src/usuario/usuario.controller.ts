@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from "@nestjs/common"
-import { CreateUsuarioDto } from "./CreateUsuarioDto"
-import { ResponseUsuarioDto } from "./ResponseUsuarioDto"
+import { CriarUsuarioDto } from "./CriarUsuarioDto"
+import { RetornaUsuarioDto } from "./RetornaUsuarioDto"
 import { UsuarioService } from "./usuario.service"
 
 
@@ -9,7 +9,7 @@ export class UsuarioController {
     constructor(private readonly usuarioService: UsuarioService) { }
 
     @Post('criar')
-    async cria(@Body() usuarioDto: CreateUsuarioDto): Promise<ResponseUsuarioDto> {
+    async cria(@Body() usuarioDto: CriarUsuarioDto): Promise<RetornaUsuarioDto> {
         const usuario = await this.usuarioService.criar(usuarioDto)
         return usuario
     }

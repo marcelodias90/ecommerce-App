@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { promises as fs } from 'fs'
-import { ResponseUsuarioDto } from 'src/usuario/ResponseUsuarioDto';
+import { RetornaUsuarioDto } from 'src/usuario/RetornaUsuarioDto';
 import { nodemailerConfiguracao } from './nodemailer.config';
 
 
 @Injectable()
 export class MailService {
 
-    async enviarMail(usuario: ResponseUsuarioDto, token: any): Promise<void> {
+    async enviarMail(usuario: RetornaUsuarioDto, token: any): Promise<void> {
         const { nome, email } = usuario
         const dados = {
             body: await fs.readFile('./src/views/partials/formulario.handlebars', 'utf-8'),

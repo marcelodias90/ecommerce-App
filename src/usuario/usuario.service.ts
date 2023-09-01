@@ -2,10 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Usuario } from "./usuario.entity";
 import { Repository } from "typeorm";
-import { CreateUsuarioDto } from "./CreateUsuarioDto";
-import { ResponseUsuarioDto } from "./ResponseUsuarioDto";
+import { CriarUsuarioDto } from "./CriarUsuarioDto";
+import { RetornaUsuarioDto } from "./RetornaUsuarioDto";
 import { EmailExistenteError } from "src/erros/EmailExistenteError";
-import { EmailInexistenteError } from "src/erros/EmailInexistenteError";
 import { TokenService } from "src/token/token.service";
 import { MailService } from "src/nodemailer/mail";
 
@@ -29,7 +28,7 @@ export class UsuarioService {
         return await this.usuarioRepository.find()
     }
 
-    async criar(usuarioDto: CreateUsuarioDto): Promise<ResponseUsuarioDto> {
+    async criar(usuarioDto: CriarUsuarioDto): Promise<RetornaUsuarioDto> {
         const { email } = usuarioDto
         const existeEmail = await this.usuarioRepository.findOne({
             where: { email }
@@ -40,7 +39,7 @@ export class UsuarioService {
         const usuario = this.usuarioRepository.create(usuarioDto);
         usuario.status = STATUS.DESATIVADO
         const novoUsuario = await this.usuarioRepository.save(usuario);
-        const responseUsuarioDto: ResponseUsuarioDto = {
+        const responseUsuarioDto: RetornaUsuarioDto = {
             id: novoUsuario.id,
             nome: novoUsuario.nome,
             sobrenome: novoUsuario.sobrenome,
@@ -52,7 +51,7 @@ export class UsuarioService {
     }
 
     async validarEmail(email: string): Promise<any> {
-        const usuarioExiste: ResponseUsuarioDto = await this.usuarioRepository.findOne({
+        const usuarioExiste: RetornaUsuarioDto = await this.usuarioRepository.findOne({
             where: {
                 email
             }
