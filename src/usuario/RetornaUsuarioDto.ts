@@ -1,4 +1,4 @@
-export class ResponseUsuarioDto {
+export class RetornaUsuarioDto {
     id: number;
     nome: string;
     sobrenome:string;
