@@ -10,18 +10,16 @@ export class UsuarioController {
 
     @Post('criar')
     async cria(@Body() usuarioDto: CriarUsuarioDto): Promise<RetornaUsuarioDto> {
-        const usuario = await this.usuarioService.criar(usuarioDto)
-        return usuario
+        return await this.usuarioService.criar(usuarioDto)
+        
     }
     @Post('validar-email/:email')
-    async validaEmail(@Param('email') email: string): Promise<any> {
-        const emailToken = await this.usuarioService.validarEmail(email)
-        return emailToken
+    async validaEmail(@Param('email') email: string): Promise<void> {
+        await this.usuarioService.validarEmail(email)
     }
 
     @Get()
-    async lista(): Promise<any> {
-        const usuarios = await this.usuarioService.listar()
-        return usuarios
+    async lista(): Promise<RetornaUsuarioDto[]> {
+        return await this.usuarioService.listar() 
     }
 }
