@@ -61,7 +61,7 @@ export class UsuarioService {
             const token = await this.tokenService.gerarToken(usuarioExiste.id);
             usuarioExiste.status = STATUS.ATIVADO
             await this.usuarioRepository.save(usuarioExiste);
-           // await this.mailService.enviarMail(usuarioExiste, token)
+            await this.mailService.enviarMail(usuarioExiste, token)
             return token
         }
     }
