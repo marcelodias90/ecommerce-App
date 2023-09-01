@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TokenCadastro } from './token.cadastro.entity';
+import { differenceInMinutes} from 'date-fns'
 
 @Injectable()
 export class TokenService {
@@ -10,13 +11,14 @@ export class TokenService {
         private tokenRepository: Repository<TokenCadastro>
     ) { }
 
-
     private Token = this.criarToken()
     async gerarToken(IdUsuario: number): Promise<any> {
         const existeToken = await this.tokenRepository.findOne({ where: { usuario_id: IdUsuario } })
         if (existeToken) {
-            const tokenExpirado = this.checkToken(existeToken.created_at)
-            return tokenExpirado === false ?
+            const tokenExpirado = this.verificaToken(existeToken.created_at)
+            console.log(tokenExpirado);
+
+            return tokenExpirado === true ?
                 this.cadastroToken(existeToken)
                 : existeToken
         }
@@ -40,13 +42,13 @@ export class TokenService {
     private async cadastroToken(tokenCadastro: TokenCadastro): Promise<any> {
         const novoToken = await this.tokenRepository.update(tokenCadastro.id,
             { token: this.Token, created_at: new Date() }
-        )       
+        )
         return this.Token
     }
-    private checkToken(dataToken: Date): boolean {
+
+    private verificaToken(dataToken: Date): boolean {
         const dataAtual = new Date()
-        const milissegundos = dataAtual.getTime() - dataToken.getTime()
-        const diferençaEntredatas = Math.floor(milissegundos / (1000 * 60))
-        return diferençaEntredatas > 60 ? true : false
+        const diferancaHoras = differenceInMinutes(dataAtual, dataToken)
+        return diferancaHoras > 60 ? true : false
     }
 }
