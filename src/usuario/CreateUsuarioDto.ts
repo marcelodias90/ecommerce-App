@@ -16,4 +16,7 @@ export class CreateUsuarioDto {
   
     @IsNotEmpty()
     senha: string;
+
+    @IsNotEmpty()
+    status: number;
   }
