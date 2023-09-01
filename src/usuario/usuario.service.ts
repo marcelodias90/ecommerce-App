@@ -24,8 +24,13 @@ export class UsuarioService {
     ) { }
 
 
-    async listar(): Promise<Usuario[]> {
-        return await this.usuarioRepository.find()
+    async listar(): Promise<RetornaUsuarioDto[]> {
+        const usuariosDtos: RetornaUsuarioDto[] = []
+        const usuarios = await this.usuarioRepository.find()
+        for (const usuarioAtual of usuarios) {
+            usuariosDtos.push(this.converteUsuarioParaDto(usuarioAtual))
+        }
+        return usuariosDtos
     }
 
     async criar(usuarioDto: CriarUsuarioDto): Promise<RetornaUsuarioDto> {
@@ -38,31 +43,33 @@ export class UsuarioService {
         }
         const usuario = this.usuarioRepository.create(usuarioDto);
         usuario.status = STATUS.DESATIVADO
-        const novoUsuario = await this.usuarioRepository.save(usuario);
-        const responseUsuarioDto: RetornaUsuarioDto = {
-            id: novoUsuario.id,
-            nome: novoUsuario.nome,
-            sobrenome: novoUsuario.sobrenome,
-            email: novoUsuario.email,
-            cpf: novoUsuario.cpf,
-            status: novoUsuario.status
-        }
-        return responseUsuarioDto
+        return this.converteUsuarioParaDto(await this.usuarioRepository.save(usuario))
     }
 
-    async validarEmail(email: string): Promise<any> {
+    async validarEmail(email: string): Promise<void> {
         const usuarioExiste: RetornaUsuarioDto = await this.usuarioRepository.findOne({
             where: {
                 email,
                 status: STATUS.DESATIVADO
             }
-        })        
+        })
         if (usuarioExiste) {
             const token = await this.tokenService.gerarToken(usuarioExiste.id);
             usuarioExiste.status = STATUS.ATIVADO
             await this.usuarioRepository.save(usuarioExiste);
             await this.mailService.enviarMail(usuarioExiste, token)
-            return token
         }
+    }
+
+    private converteUsuarioParaDto(usuario: Usuario): RetornaUsuarioDto {
+        const responseUsuarioDto: RetornaUsuarioDto = {
+            id: usuario.id,
+            nome: usuario.nome,
+            sobrenome: usuario.sobrenome,
+            email: usuario.email,
+            cpf: usuario.cpf,
+            status: usuario.status
+        }
+        return responseUsuarioDto
     }
 }
