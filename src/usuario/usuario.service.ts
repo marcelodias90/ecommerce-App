@@ -53,9 +53,10 @@ export class UsuarioService {
     async validarEmail(email: string): Promise<any> {
         const usuarioExiste: RetornaUsuarioDto = await this.usuarioRepository.findOne({
             where: {
-                email
+                email,
+                status: STATUS.DESATIVADO
             }
-        })
+        })        
         if (usuarioExiste) {
             const token = await this.tokenService.gerarToken(usuarioExiste.id);
             usuarioExiste.status = STATUS.ATIVADO
