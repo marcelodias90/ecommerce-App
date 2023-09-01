@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TokenCadastro } from './token.cadastro.entity';
-import { differenceInMinutes} from 'date-fns'
+import { differenceInMinutes } from 'date-fns'
+import { CriarTokenCadastroDto } from './criarTokenCadastroDto';
 
 @Injectable()
 export class TokenService {
@@ -12,25 +13,24 @@ export class TokenService {
     ) { }
 
     private Token = this.criarToken()
-    async gerarToken(IdUsuario: number): Promise<any> {
-        const existeToken = await this.tokenRepository.findOne({ where: { usuario_id: IdUsuario } })
+    async gerarToken(IdUsuario: number): Promise<TokenCadastro> {
+        const tokenGerados = await this.tokenRepository.find({ where: { usuario_id: IdUsuario } })
+        const existeToken = tokenGerados[tokenGerados.length - 1]
         if (existeToken) {
             const tokenExpirado = this.verificaToken(existeToken.created_at)
-            console.log(tokenExpirado);
-
             return tokenExpirado === true ?
                 this.cadastroToken(existeToken)
                 : existeToken
         }
 
-        const novoToken = this.tokenRepository.create({
+        const token: CriarTokenCadastroDto ={
             usuario_id: IdUsuario,
-            created_at: new Date().toISOString(),
+            created_at: new Date(),
             token: this.Token
-        })
+        }
+        const novoToken = this.tokenRepository.create(token)
+        return await this.tokenRepository.save(novoToken);
 
-        await this.tokenRepository.save(novoToken);
-        return novoToken;
     }
 
     private criarToken() {
