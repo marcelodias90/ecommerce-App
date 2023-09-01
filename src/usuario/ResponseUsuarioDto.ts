@@ -4,4 +4,5 @@ export class ResponseUsuarioDto {
     sobrenome:string;
     email: string;
     cpf: string;
+    status: number;
 }
