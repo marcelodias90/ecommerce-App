@@ -10,8 +10,8 @@ import { TokenService } from "src/token/token.service";
 import { MailService } from "src/nodemailer/mail";
 
 
-enum status {
-    ATIVO = 1,
+enum STATUS {
+    ATIVADO = 1,
     DESATIVADO = 0
 }
 
@@ -38,7 +38,7 @@ export class UsuarioService {
             throw new EmailExistenteError(existeEmail.email)
         }
         const usuario = this.usuarioRepository.create(usuarioDto);
-        usuario.status = status.DESATIVADO
+        usuario.status = STATUS.DESATIVADO
         const novoUsuario = await this.usuarioRepository.save(usuario);
         const responseUsuarioDto: ResponseUsuarioDto = {
             id: novoUsuario.id,
@@ -52,7 +52,6 @@ export class UsuarioService {
     }
 
     async validarEmail(email: string): Promise<any> {
-        const ativado = 1
         const usuarioExiste: ResponseUsuarioDto = await this.usuarioRepository.findOne({
             where: {
                 email
@@ -60,9 +59,9 @@ export class UsuarioService {
         })
         if (usuarioExiste) {
             const token = await this.tokenService.gerarToken(usuarioExiste.id);
-            usuarioExiste.status = status.ATIVO
+            usuarioExiste.status = STATUS.ATIVADO
             await this.usuarioRepository.save(usuarioExiste);
-            await this.mailService.enviarMail(usuarioExiste, token)
+           // await this.mailService.enviarMail(usuarioExiste, token)
             return token
         }
     }
