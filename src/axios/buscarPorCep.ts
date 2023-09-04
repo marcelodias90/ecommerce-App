@@ -1,4 +1,6 @@
+import { Inject, Injectable } from "@nestjs/common";
 import axios from 'axios'
+import { IConverterStrings } from 'src/conversores/ConverterString';
 import { CriarEnderecoDto } from 'src/endereco/CriarEnderecoDto';
 import { RetonarEnderecoDto } from 'src/endereco/RetornaEnderecoDto';
 import { BairroDivergenteError } from 'src/erros/BairroDivergenteError';
@@ -6,7 +8,11 @@ import { CepNaoExisteError } from 'src/erros/CepNaoExisteError';
 import { LogradouroDivergenteError } from 'src/erros/LogradouroDivergenteError';
 import { UfDivergenteError } from 'src/erros/UfDivergenteError';
 
+@Injectable()
 export class BuscarPorCepService {
+  constructor(
+    @Inject(IConverterStrings) private readonly converterString: IConverterStrings,
+  ) { }
   async pesquisarCep(dadosEndereco: CriarEnderecoDto[], usuario_Id: number): Promise<RetonarEnderecoDto[]> {
     try {
       let enderecosRetornados: RetonarEnderecoDto[] = []
@@ -17,13 +23,17 @@ export class BuscarPorCepService {
         if (enderecoEncontrado.data.erro) {
           throw new CepNaoExisteError(dados.cep);
         }
-        if (dados.logradouro?.length && dados.logradouro?.length !== enderecoEncontrado.data.logradouro) {
+        if (dados.logradouro?.length && this.converterString.converter(dados.logradouro)
+          !== this.converterString.converter(enderecoEncontrado.data.logradouro)) 
+        {
           throw new LogradouroDivergenteError(dados.logradouro)
         }
-        if (dados.bairro?.length && dados.bairro?.length !== enderecoEncontrado.data.bairro) {
+        if (dados.bairro?.length && this.converterString.converter(dados.bairro)
+          !== this.converterString.converter(enderecoEncontrado.data.bairro)) {
           throw new BairroDivergenteError(dados.bairro)
         }
-        if (dados.uf?.length && dados.uf?.length !== enderecoEncontrado.data.uf) {
+        if (dados.uf?.length && this.converterString.converter(dados.uf)
+          !== this.converterString.converter(enderecoEncontrado.data.uf)) {
           throw new UfDivergenteError(dados.uf)
         }
         const endereco: RetonarEnderecoDto = {
@@ -31,7 +41,7 @@ export class BuscarPorCepService {
           principal: dados.principal,
           apelido: dados.apelido,
           logradouro: enderecoEncontrado.data.logradouro,
-          complemento:dados.complemento? dados.complemento : enderecoEncontrado.data.complemento,
+          complemento: dados.complemento ? dados.complemento : enderecoEncontrado.data.complemento,
           bairro: enderecoEncontrado.data.bairro,
           localidade: enderecoEncontrado.data.localidade,
           uf: enderecoEncontrado.data.uf,
