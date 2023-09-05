@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UsuarioModule } from './usuario/usuario.modules';
 import { EnderecoModule } from './endereco/endereco.modules';
+import { PagamentoModule } from './pagamento/pagamento.modules';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { EnderecoModule } from './endereco/endereco.modules';
       }
     }),
     UsuarioModule,
-    EnderecoModule
+    EnderecoModule,
+    PagamentoModule
   ],
 
 })
