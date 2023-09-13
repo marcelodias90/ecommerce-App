@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from "@nestjs/common"
 import { CriarUsuarioDto } from "./CriarUsuarioDto"
 import { RetornaUsuarioDto } from "./RetornaUsuarioDto"
-import { UsuarioService } from "./usuario.service"
+import { UsuarioService } from "./infra/orm/repositories/usuario.service"
 
 
 @Controller('usuario')
@@ -11,7 +11,7 @@ export class UsuarioController {
     @Post('criar')
     async cria(@Body() usuarioDto: CriarUsuarioDto): Promise<RetornaUsuarioDto> {
         return await this.usuarioService.criar(usuarioDto)
-        
+
     }
     @Post('validar-email/:email')
     async validaEmail(@Param('email') email: string): Promise<void> {
@@ -20,6 +20,6 @@ export class UsuarioController {
 
     @Get()
     async lista(): Promise<RetornaUsuarioDto[]> {
-        return await this.usuarioService.listar() 
+        return await this.usuarioService.listar()
     }
 }
