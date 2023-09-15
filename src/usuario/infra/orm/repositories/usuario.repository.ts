@@ -4,10 +4,11 @@ import { AdicionarUsuarioRepository } from "src/usuario/data/protocols/db/adicio
 import { AdicionarUsuario } from "src/usuario/domain/usecases/adicionar-usuario";
 import { Repository } from "typeorm";
 import { Usuario } from "../entities/usuario.entity";
+import { USUARIO_REPOSITORY } from "../typeOrm/typeorm.repositories";
 
 @Injectable()
 export class UsuarioRepository implements AdicionarUsuarioRepository {
-    constructor(@Inject('Adicionar_Usuario') private usuarioRepository: Repository<Usuario>) { }
+    constructor(@Inject(USUARIO_REPOSITORY) private usuarioRepository: Repository<Usuario>) { }
     async adicionar(data: AdicionarUsuario.Parametros): Promise<AdicionarUsuario.Resultado> {
         const usuario = await this.usuarioRepository.save(data)
         return {
