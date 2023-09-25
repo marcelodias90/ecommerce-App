@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from "@nestjs/common"
-import { CriarUsuarioDto } from "./CriarUsuarioDto"
-import { RetornaUsuarioDto } from "./RetornaUsuarioDto"
-import { UsuarioService } from "./infra/orm/repositories/usuario.service"
+import { CriarUsuarioDto } from "../../../CriarUsuarioDto"
+import { RetornaUsuarioDto } from "../../../RetornaUsuarioDto"
+import { UsuarioService } from "../../../infra/orm/repositories/usuario.service"
 
 
 @Controller('usuario')
