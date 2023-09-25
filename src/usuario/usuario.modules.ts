@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { UsuarioController } from "./usuario.controller";
+import { UsuarioController } from "./main/controllers/usuario/usuario.controller";
 import { UsuarioService } from "./infra/orm/repositories/usuario.service";
 import { Usuario } from "./infra/orm/entities/usuario.entity";
 import { TokenCadastro } from "src/token/token.cadastro.entity";
