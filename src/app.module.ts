@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { UsuarioAppModule } from './usuario/usuario.modules';
+import { UsuarioAppModule } from './usuario/usuario.app.module';
 import { EnderecoModule } from './endereco/endereco.modules';
 import { PagamentoModule } from './pagamento/pagamento.modules';
 
