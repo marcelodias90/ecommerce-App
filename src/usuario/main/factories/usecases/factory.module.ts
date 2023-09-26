@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { adicionarUsuarioFactory } from "./adicionarUsuarioFactory";
 import { usuarioProvider } from "src/usuario/infra/orm/providers/usuario.provider";
 import { UsuarioRepository } from "src/usuario/infra/orm/repositories/usuario.repository";
+import { buscarPorEmailFactory } from "./buscarPorEmailFactory";
 
 @Module({
     providers: [
@@ -10,13 +11,15 @@ import { UsuarioRepository } from "src/usuario/infra/orm/repositories/usuario.re
 
         //factories
         adicionarUsuarioFactory,
+        buscarPorEmailFactory,
 
         //Repository
         UsuarioRepository
     ],
     exports: [
         //factories
-        adicionarUsuarioFactory
+        adicionarUsuarioFactory,
+        buscarPorEmailFactory,
     ]
 })
 export class FactoryModule { }
